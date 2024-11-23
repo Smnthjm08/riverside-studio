@@ -1,9 +1,15 @@
-import { Button } from "@/components/ui/button";
+import { auth } from "../../auth";
+import UserAvatar from "@/components/profile-dropdown";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
   return (
     <main className="h-screen justify-center flex items-center gap-4">
-        <Button>100xliveArena</Button>
+      <div>
+        <h6>{session?.user?.name}</h6>
+        <p>{session?.user?.email}</p>
+      </div>
+      <UserAvatar />
     </main>
   );
 }
