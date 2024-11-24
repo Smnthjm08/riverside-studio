@@ -26,6 +26,26 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Room Room[]
+}
+
+model Room {
+  id                  String  @id @default(cuid())
+  name                String
+  enableChat          Boolean @default(false)
+  isPublic            Boolean @default(false)
+  isPasswordProtected Boolean @default(false)
+  password            String?
+  maxParticipants     Int?
+  // scheduledStart      DateTime?
+  // expiresAt           DateTime?
+  ownerId             String
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {

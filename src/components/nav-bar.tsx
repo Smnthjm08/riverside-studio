@@ -1,25 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import * as React from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./mode-toggle";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const navItems = [
     { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
+    { name: "Features", href: "/features" },
     { name: "Services", href: "/services" },
-    { name: "Contact", href: "/contact" },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b-2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
@@ -27,8 +26,8 @@ const Navbar = () => {
               100x<span className="text-blue-500">liveArena</span>
             </Link>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+          <div className="hidden md:block flex-1">
+            <div className="flex justify-center items-baseline space-x-4">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
@@ -40,12 +39,16 @@ const Navbar = () => {
               ))}
             </div>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
+          <div className="hidden md:block w-49">
+            <div className="flex items-center justify-end">
               <ModeToggle />
-              <Link href={"/sign-in"}>
-                <Button className="ml-4">Get Started</Button>
-              </Link>
+              <Button className="ml-4" variant="outline">
+                <Link href={"/join-room"}>Join Room via Link</Link>
+              </Button>
+
+              <Button className="ml-4">
+                <Link href={"/sign-in"}>Get Started</Link>
+              </Button>
             </div>
           </div>
           <div className="md:hidden">
@@ -81,11 +84,14 @@ const Navbar = () => {
           </div>
           <div className="pt-4 pb-3 border-t border-foreground/10">
             <div className="flex items-center px-5">
-              {/* temp logout button */}
               <ModeToggle />
-              <Link href={"/sign-in"}>
-                <Button className="ml-4">Get Started</Button>
-              </Link>
+              <Button className="ml-4" variant="outline">
+                <Link href={"/join-room"}>Join Room via Link</Link>
+              </Button>
+
+              <Button className="ml-4">
+                <Link href={"/sign-in"}>Get Started</Link>
+              </Button>
             </div>
           </div>
         </div>
