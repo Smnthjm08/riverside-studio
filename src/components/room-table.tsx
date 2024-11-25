@@ -1,11 +1,11 @@
-import { DataTableDemo } from "./table";
+import { RoomTable } from "./table";
 
-export function RoomTable(){
-    return(
-        <main>
-            <div>
-                <DataTableDemo />
-            </div>
-        </main>
-    )
+export function RoomContent() {
+  return (
+    <main>
+      <RoomTable />
+    </main>
+  );
 }
+
+export { RoomTable };
