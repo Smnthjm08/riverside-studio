@@ -27,24 +27,8 @@ import {
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Users, Lock, MessageSquare } from "lucide-react";
-
-const FormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Room name must be at least 2 characters.",
-  }),
-  enableChat: z.boolean().default(false),
-  isPasswordProtected: z.boolean().default(false),
-  password: z.string().optional(),
-  maxParticipants: z.number().min(2).max(6).optional(),
-}).refine((data) => {
-  if (data.isPasswordProtected && !data.password) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Password is required when password protection is enabled",
-  path: ["password"],
-});
+import { roomSchema } from "@/actions/room/schema";
+import{  getRoom,  createRoom } from "@/actions/room/index";
 
 const defaultValues = {
   name: "",
@@ -56,28 +40,53 @@ const defaultValues = {
 
 export default function CreateRoom() {
   const [open, setOpen] = useState(false);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof roomSchema>>({
+    resolver: zodResolver(roomSchema),
     defaultValues,
   });
 
   const isPasswordProtected = form.watch("isPasswordProtected");
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "Room Created Successfully",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-    
-    // Close the dialog
-    setOpen(false);
-    
-    // Reset form to default values
-    form.reset(defaultValues);
+  async function onSubmit(data: z.infer<typeof roomSchema>) {
+    try {
+      const getRooms = await getRoom();
+      console.log("getROoms", getRooms);
+      const result = await createRoom(data);
+      console.log(result, "result");
+
+      if ("error" in result) {
+        toast({
+          title: "Error Creating Room",
+          description:
+            typeof result.error === "string"
+              ? result.error
+              : "An unknown error occurred",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("5");
+      toast({
+        title: "Room Created Successfully",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        ),
+      });
+
+      setOpen(false);
+      form.reset(defaultValues);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      console.log(error);
+      // toast({
+      //   title: "Error",
+      //   description: "An unexpected error occurred",
+      //   variant: "destructive"
+      // });
+    }
   }
 
   return (
@@ -89,12 +98,14 @@ export default function CreateRoom() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Create Room</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            Create Room
+          </DialogTitle>
           <DialogDescription className="text-sm">
             Configure your room settings
           </DialogDescription>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-3">
@@ -105,7 +116,7 @@ export default function CreateRoom() {
                   <FormItem>
                     <FormLabel>Room Name</FormLabel>
                     <FormControl>
-                      <Input 
+                      <Input
                         placeholder="Enter room name"
                         className="w-full"
                         {...field}
@@ -132,7 +143,9 @@ export default function CreateRoom() {
                           placeholder="Max participants"
                           className="w-full"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
                         />
                       </div>
                     </FormControl>
@@ -153,7 +166,9 @@ export default function CreateRoom() {
                     <div className="space-y-0.5">
                       <div className="flex items-center space-x-2">
                         <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                        <FormLabel className="font-medium">Enable Chat</FormLabel>
+                        <FormLabel className="font-medium">
+                          Enable Chat
+                        </FormLabel>
                       </div>
                       <FormDescription className="text-xs">
                         Allow text chat in room
@@ -177,7 +192,9 @@ export default function CreateRoom() {
                     <div className="space-y-0.5">
                       <div className="flex items-center space-x-2">
                         <Lock className="h-4 w-4 text-muted-foreground" />
-                        <FormLabel className="font-medium">Password Protected</FormLabel>
+                        <FormLabel className="font-medium">
+                          Password Protected
+                        </FormLabel>
                       </div>
                       <FormDescription className="text-xs">
                         Secure access with password

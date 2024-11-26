@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
-import { prisma } from "@/db/primsa";
+import { prisma } from "@/db/prisma";
 
 export async function GET({ params }: { params: { roomId: string } }) {
   const { roomId } = params;

@@ -34,10 +34,10 @@ model Room {
   id                  String  @id @default(cuid())
   name                String
   enableChat          Boolean @default(false)
-  // isPublic            Boolean @default(false)
   isPasswordProtected Boolean @default(false)
   password            String?
   maxParticipants     Int?   
+  // isPublic            Boolean @default(false)
   // scheduledStart      DateTime?
   // expiresAt           DateTime?
   ownerId             String
