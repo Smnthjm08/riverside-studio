@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Search } from "lucide-react";
+import { ChevronDown, MoreHorizontal, Search } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,18 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-export type RoomTypes = {
-  id: string;
-  name: string;
-  enableChat: boolean;
-  isPublic: boolean;
-  isPasswordProtected: boolean;
-  password?: string | null;
-  maxParticipants: number;
-  ownerId: string;
-  createdAt: string;
-};
+import { ApiResponseTypes, RoomTypes } from "@/types/roomTypes";
 
 export const columns: ColumnDef<RoomTypes>[] = [
   {
@@ -71,29 +61,26 @@ export const columns: ColumnDef<RoomTypes>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-
   {
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
-
   {
     accessorKey: "enableChat",
     header: "Chat Enabled",
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue("enableChat") === true ? "Enabled" : "Disbaled"}
+        {row.getValue("enableChat") ? "Enabled" : "Disabled"}
       </div>
     ),
   },
-
   {
-    accessorKey: "isPublic",
+    accessorKey: "isPasswordProtected",
     header: "Access Type",
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue("isPublic") === true ? "Public" : "Private"}
+        {row.getValue("isPasswordProtected") ? "Private" : "Public"}
       </div>
     ),
   },
@@ -101,56 +88,46 @@ export const columns: ColumnDef<RoomTypes>[] = [
     accessorKey: "createdAt",
     header: "Created On",
     cell: ({ row }) => {
-      const createdTime: string = row.getValue("createdAt");
-      const [date, time] = createdTime.split("T");
-      return (
-        <div className="capitalize">
-          <span>{date}</span> <span>{time.replace("Z", "")}</span>
-        </div>
-      );
+      const [formattedDate, setFormattedDate] = useState<string>("");
+      
+      useEffect(() => {
+        const createdTime = row.getValue("createdAt");
+        if (createdTime) {
+          const date = new Date(createdTime);
+          setFormattedDate(
+            `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+          );
+        }
+      }, [row]);
+
+      return <div className="capitalize">{formattedDate || "Loading..."}</div>;
     },
   },
   {
     accessorKey: "maxParticipants",
-    header: "Max Paricipants",
+    header: "Max Participants",
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("maxParticipants")}</div>
     ),
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-
-  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
+      const room = row.original;
 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
+              <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(room.id)}
             >
               Copy Invite Link
             </DropdownMenuItem>
@@ -164,19 +141,17 @@ export const columns: ColumnDef<RoomTypes>[] = [
   },
 ];
 
-export function RoomTable({ roomData }) {
+
+export function RoomTable({ roomData }: ApiResponseTypes) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
   console.log("Roomdata here", roomData);
 
   const table = useReactTable({
-    data: roomData || [],
+    data: roomData.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
