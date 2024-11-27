@@ -2,10 +2,9 @@ import { Suspense } from 'react';
 import { getRoom } from "@/actions/room";
 import CreateRoom from "@/components/create-room";
 import { RoomTable } from "@/components/room-table";
-import { ApiResponseTypes } from '@/types/roomTypes';
 
 export default async function RoomPage() {
-  const rooms: ApiResponseTypes = await getRoom();
+  const rooms = await getRoom();
   
   return (
     <main className="w-full min-h-screen p-16">
@@ -16,7 +15,7 @@ export default async function RoomPage() {
         </div>
         <section>
           <Suspense fallback={<div>Loading rooms...</div>}>
-            <RoomTable roomData={rooms} />
+          <RoomTable roomData={rooms} />
           </Suspense>
         </section>
       </div>

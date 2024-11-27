@@ -14,8 +14,6 @@ export async function createRoom(
   message?: string;
 }> {
   const session = await auth();
-  console.log("Session at 1", session);
-  console.log("2");
 
   if (!session?.user?.id) {
     return {
@@ -40,7 +38,6 @@ export async function createRoom(
         ownerId: session.user.id,
       },
     });
-    console.log("3");
     return {
       status: 201,
       data: room,
@@ -58,8 +55,6 @@ export async function createRoom(
 
 export async function getRoom() {
   const session = await auth();
-  console.log("Session at 1", session);
-  console.log("2");
 
   if (!session?.user?.id) {
     return {
@@ -72,7 +67,5 @@ export async function getRoom() {
   const room = await prisma.room.findMany({
     where: { ownerId: session?.user?.id },
   });
-  console.log(room);
-
-  return {status: 200, data: room}
+  return { status: 200, data: room };
 }

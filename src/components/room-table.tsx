@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, MoreHorizontal, Search } from 'lucide-react';
+import { ChevronDown, MoreHorizontal, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -89,7 +89,7 @@ export const columns: ColumnDef<RoomTypes>[] = [
     header: "Created On",
     cell: ({ row }) => {
       const [formattedDate, setFormattedDate] = useState<string>("");
-      
+
       useEffect(() => {
         const createdTime = row.getValue("createdAt");
         if (createdTime) {
@@ -141,14 +141,11 @@ export const columns: ColumnDef<RoomTypes>[] = [
   },
 ];
 
-
 export function RoomTable({ roomData }: ApiResponseTypes) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
-  console.log("Roomdata here", roomData);
 
   const table = useReactTable({
     data: roomData.data || [],

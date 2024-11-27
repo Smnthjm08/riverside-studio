@@ -28,7 +28,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { Plus, Users, Lock, MessageSquare } from "lucide-react";
 import { roomSchema } from "@/actions/room/schema";
-import{  getRoom,  createRoom } from "@/actions/room/index";
+import { createRoom } from "@/actions/room/index";
 
 const defaultValues = {
   name: "",
@@ -49,10 +49,7 @@ export default function CreateRoom() {
 
   async function onSubmit(data: z.infer<typeof roomSchema>) {
     try {
-      const getRooms = await getRoom();
-      console.log("getROoms", getRooms);
       const result = await createRoom(data);
-      console.log(result, "result");
 
       if ("error" in result) {
         toast({
@@ -65,8 +62,6 @@ export default function CreateRoom() {
         });
         return;
       }
-
-      console.log("5");
       toast({
         title: "Room Created Successfully",
         description: (
@@ -78,14 +73,13 @@ export default function CreateRoom() {
 
       setOpen(false);
       form.reset(defaultValues);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       console.log(error);
-      // toast({
-      //   title: "Error",
-      //   description: "An unexpected error occurred",
-      //   variant: "destructive"
-      // });
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
     }
   }
 
